@@ -1,3 +1,5 @@
+import "./index.css";
+
 import App from "./App";
 import CssBaseline from "@mui/material/CssBaseline";
 import React from "react";

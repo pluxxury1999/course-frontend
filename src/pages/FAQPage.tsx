@@ -1,4 +1,4 @@
-import { CircularProgress, Container, Typography } from "@mui/material";
+import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import { FaqItem, fetchFaqs } from "../api/faq";
 import React, { useEffect, useState } from "react";
 
@@ -16,8 +16,21 @@ const FAQPage: React.FC = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) return <CircularProgress />;
-    if (error) return <Typography color="error">Error: {error}</Typography>;
+    if (loading)
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
+    if (error)
+        return (
+            <Typography
+                color="error"
+                align="center"
+                sx={{ mt: 4 }}>
+                Error: {error}
+            </Typography>
+        );
 
     return (
         <Container
@@ -26,7 +39,7 @@ const FAQPage: React.FC = () => {
             <Typography
                 variant="h4"
                 gutterBottom>
-                Frequently Asked Questions
+                Поширені запитання
             </Typography>
             {faqs.map((faq) => (
                 <Accordion
