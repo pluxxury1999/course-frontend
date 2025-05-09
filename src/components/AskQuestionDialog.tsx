@@ -14,11 +14,12 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import { NewUserQuestion, postUserQuestion } from "../api/userQuestions";
 import React, { forwardRef, useState } from "react";
-import { UserQuestion, postUserQuestion } from "../api/userQuestions";
 
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
+// Transition-компонент для анімації
 const Transition = forwardRef(function Transition(props: SlideProps & { children: React.ReactElement }, ref: React.Ref<unknown>) {
     return (
         <Slide
@@ -31,11 +32,12 @@ const Transition = forwardRef(function Transition(props: SlideProps & { children
 
 export const AskQuestionDialog: React.FC = () => {
     const [open, setOpen] = useState(false);
-    const [form, setForm] = useState<UserQuestion>({
+    const [form, setForm] = useState<NewUserQuestion>({
         name: "",
         email: "",
         question: "",
         answer: "",
+        isPublished: false, // додаємо прапорець
     });
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
@@ -48,7 +50,6 @@ export const AskQuestionDialog: React.FC = () => {
     const handleOpen = () => {
         setOpen(true);
         setSent(false);
-        // обнулити помилки
         setNameError(null);
         setEmailError(null);
         setQuestionError(null);
@@ -61,26 +62,21 @@ export const AskQuestionDialog: React.FC = () => {
         if (/\s/.test(value)) return "Ім’я повинно бути одним словом";
         return null;
     };
-
     const validateEmail = (value: string) => {
-        // простий regex для email
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!value) return "Email обов’язковий";
         if (!re.test(value)) return "Невірний формат email";
         return null;
     };
-
     const validateQuestion = (value: string) => {
-        const wordCount = value.trim().split(/\s+/).filter(Boolean).length;
-        if (wordCount < 5) return "Питання має містити щонайменше 5 слів";
+        const words = value.trim().split(/\s+/).filter(Boolean).length;
+        if (words < 5) return "Питання має містити не менше 5 слів";
         return null;
     };
 
-    const handleChange = (field: keyof Omit<UserQuestion, "answer">) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (field: keyof Omit<NewUserQuestion, "answer" | "isPublished">) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setForm((prev) => ({ ...prev, [field]: val }));
-
-        // робимо валідацію на лету
         if (field === "name") setNameError(validateName(val));
         if (field === "email") setEmailError(validateEmail(val));
         if (field === "question") setQuestionError(validateQuestion(val));
@@ -96,7 +92,13 @@ export const AskQuestionDialog: React.FC = () => {
             setSent(true);
             setTimeout(() => {
                 setSending(false);
-                setForm({ name: "", email: "", question: "", answer: "" });
+                setForm({
+                    name: "",
+                    email: "",
+                    question: "",
+                    answer: "",
+                    isPublished: false,
+                });
                 handleClose();
             }, 1500);
         } catch (err) {
@@ -109,6 +111,7 @@ export const AskQuestionDialog: React.FC = () => {
         <>
             <IconButton
                 onClick={handleOpen}
+                color="primary"
                 sx={{
                     position: "fixed",
                     bottom: 16,
@@ -119,8 +122,7 @@ export const AskQuestionDialog: React.FC = () => {
                         "50%": { transform: "scale(1.1)" },
                         "100%": { transform: "scale(1)" },
                     },
-                }}
-                color="primary">
+                }}>
                 <HelpOutlineIcon fontSize="large" />
             </IconButton>
 
