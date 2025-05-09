@@ -3,6 +3,7 @@ import { FaqItem, fetchFaqs } from "../api/faq";
 import React, { useEffect, useState } from "react";
 
 import Accordion from "../components/Accordion";
+import { AskQuestionDialog } from "../components/AskQuestionDialog";
 
 const FAQPage: React.FC = () => {
     const [faqs, setFaqs] = useState<FaqItem[]>([]);
@@ -48,6 +49,7 @@ const FAQPage: React.FC = () => {
                     answer={faq.answer}
                 />
             ))}
+            <AskQuestionDialog />
         </Container>
     );
 };
