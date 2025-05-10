@@ -6,9 +6,21 @@ export interface FaqItem {
     answer: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL as string;
 
+/**
+ * Отримати всі FAQ
+ */
 export async function fetchFaqs(): Promise<FaqItem[]> {
-    const response = await axios.get<FaqItem[]>(API_URL + "/faq");
-    return response.data;
+    const { data } = await axios.get<FaqItem[]>(`${API_URL}/faq`);
+    return data;
+}
+
+/**
+ * Створити новий FAQ-запис
+ * @param payload Обʼєкт з полями question та answer
+ */
+export async function postFaq(payload: { question: string; answer: string }): Promise<FaqItem> {
+    const { data } = await axios.post<FaqItem>(`${API_URL}/faq`, payload);
+    return data;
 }
